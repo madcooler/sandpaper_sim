@@ -47,7 +47,13 @@ public:
         y += v.y;
         z += v.z;
     }
+    
+    double distance(Vertex v)
+    {
+        return sqrt( (x-v.x)*(x-v.x) + (y-v.y)*(y-v.y) + (z-v.z)*(z-v.z));
+    }
 
+    
     Vertex()
     {
         x = y = z = 0;
@@ -137,29 +143,7 @@ public:
         face_list.empty();
     };
     
-    void AddShape(const ShapeObject * shape)
-    {
-        int original_size = vertex_list.size();
-        
-        for (int i = 0; i < shape->vertex_list.size(); i++)
-        {
-            vertex_list.push_back(shape->vertex_list[i]);
-        }
-        
-        
-        for (int i = 0; i < shape->face_list.size(); i++)
-        {
-            Face newface = shape->face_list[i];
-            
-            for(int j =0;j<newface.verts.size();j++)
-            {
-                newface.verts[j] += original_size;
-            }
-            
-            face_list.push_back(newface);
-        }
-
-    }
+    void AddShape(const ShapeObject * shape);
     
     void AddVertex(
         double a,
@@ -232,6 +216,8 @@ public:
     void RandomlyStretch();
     
     void PrintAllFace();
+    
+    void ConnectShape(const ShapeObject * obj,double threshold);
 };
 
 class Cube : public ShapeObject

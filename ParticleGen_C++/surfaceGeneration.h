@@ -19,7 +19,7 @@
 // denstity of particle per unit grid
 #define DENSITY 1
 
-#define HasPlane true
+#define HasPlane false
 
 inline void generateSurface()
 {
@@ -35,7 +35,7 @@ inline void generateSurface()
 //    int     Rot_X                   = 45;
     
     int     disNum                  =  3;
-    double  distortionParameter     = 0.2;
+    double  distortionParameter     = 0.1;
     double  divideParameter         = 0.2;
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
@@ -65,7 +65,7 @@ inline void generateSurface()
                 double b = getUniformRandomNumber(0.0,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
-                objPointer  = new Fine_Cube(5,1,2,3);
+                objPointer  = new Fine_Cube(3);
                 
     //            if ( chooseObj < 1.0)
     //                objSet[i][j][l]  = Cube(0.8);

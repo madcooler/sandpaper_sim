@@ -154,6 +154,76 @@ void ShapeObject::SlightlyRotateAlongXY(double angle)
     }
 }
 
+void ShapeObject::AddShape(const ShapeObject * shape)
+{
+    int original_size = vertex_list.size();
+    
+    for (int i = 0; i < shape->vertex_list.size(); i++)
+    {
+        vertex_list.push_back(shape->vertex_list[i]);
+    }
+    
+    
+    for (int i = 0; i < shape->face_list.size(); i++)
+    {
+        Face newface = shape->face_list[i];
+        
+        for(int j =0;j<newface.verts.size();j++)
+        {
+            newface.verts[j] += original_size;
+        }
+        
+        face_list.push_back(newface);
+    }
+
+}
+
+// merge near verteces
+void ShapeObject::ConnectShape(const ShapeObject *obj, double threshold)
+{
+    size_t origin_ver_size  = vertex_list.size();
+    size_t origin_face_size = face_list.size();
+    
+    AddShape(obj);
+    
+    std::vector<size_t> origin_ver;
+    std::vector<size_t> obj_ver;
+    
+    for(int i = 0; i < origin_ver_size;i++)
+        for(int j = origin_ver_size; j < vertex_list.size(); j++)
+        {
+            if(i>origin_ver_size/2)
+            {
+             int ll=0;
+            }
+            double dis = vertex_list[i].distance(vertex_list[j]);
+            if(  ! (dis > threshold) )
+            {
+                origin_ver.push_back(i);
+                obj_ver.push_back(j);
+                
+//                vertex_list.
+            }
+        
+        
+        }
+    
+    for(int i = origin_face_size; i < face_list.size();i++)
+    {
+        for(int j = 0; j < obj_ver.size(); j++)
+        {
+            for(int k = 0; k < face_list[i].verts.size(); k++)
+            {
+                if(face_list[i].verts[k] == obj_ver[j])
+                {
+                    face_list[i].verts[k] = origin_ver[j];
+                    continue;
+                }
+            }
+        }
+    }
+    
+}
 
 
 void ShapeObject::DivideAllFace(double movement)
