@@ -115,7 +115,7 @@ public:
     for( int i = 0 ; i < nverts ; i ++ )
     {
         int ind = verts[i];
-        printf("Face : %d ",ind);
+        printf(" %d ",ind);
     }
 
   }
@@ -202,21 +202,36 @@ public:
     void MoveObject (double a,double b,double c);
     void ScaleObject(double a,double b,double c);
     void RandomlyRotate();
+    
     virtual void RandomlyRotate(
         double angleX,
         double angleY,
         double angleZ
         );
+    
     virtual void Rotate(
         double angleX,
         double angleY,
         double angleZ
         );
+    
     void SlightlyRotateAlongXY(double angle);
+    
     virtual void Distortion (double movement);
+    
     void DivideFace (double movement);
+    
+    void DivideOneFace(
+        Face * chosenFace,
+        int chosenFaceIndex,
+        double movement
+        );
+    
+    void DivideAllFace(double movement);
+    
     void RandomlyStretch();
     
+    void PrintAllFace();
 };
 
 class Cube : public ShapeObject
@@ -421,8 +436,8 @@ public:
         {
             for(int j = 0; j < res; j++)
             {
-                x = ( (double)(i - res/2 )/res);
-                y = ( (double)(j - res/2 )/res);
+                x = ( (double)(i - res/2 )/(res-1));
+                y = ( (double)(j - res/2 )/(res-1));
                 AddVertex(x, y, z);
             }
         }
@@ -620,9 +635,7 @@ public:
                     lowest = scale * exp(lowest)/ 1;
                 }
                 
-                z = x * x / 2 * var_x * var_x + y * y / 2 * var_y * var_y ;
-                
-                z = - z ;
+                z = - x * x / (2 * var_x * var_x) - y * y / (2 * var_y * var_y) ;
                 
                 z = scale * exp(z)/ 1;//(2 * M_PI * var_x * var_y);
                 

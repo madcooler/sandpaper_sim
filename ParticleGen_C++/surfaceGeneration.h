@@ -11,13 +11,15 @@
 #include "RandomNumber.h"
 #include "Scene.hpp"
 
+#include "Fine_Cube.hpp"
+
 #define WIDTH   1
 #define HEIGHT  1
 
 // denstity of particle per unit grid
 #define DENSITY 1
 
-#define HasPlane false
+#define HasPlane true
 
 inline void generateSurface()
 {
@@ -32,11 +34,11 @@ inline void generateSurface()
 ////    double  cubeSize                = 0.5;
 //    int     Rot_X                   = 45;
     
-    int     disNum                  =  2;
-    double  distortionParameter     = 0.01;
+    int     disNum                  =  3;
+    double  distortionParameter     = 0.2;
     double  divideParameter         = 0.2;
 //    double  cubeSize                = 0.5;
-    int     Rot_X                   = 0;
+    int     Rot_X                   = 45;
     
     if(HasPlane)
     {
@@ -63,7 +65,7 @@ inline void generateSurface()
                 double b = getUniformRandomNumber(0.0,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
-                objPointer  = new Cube(1);
+                objPointer  = new Fine_Cube(5,1,2,3);
                 
     //            if ( chooseObj < 1.0)
     //                objSet[i][j][l]  = Cube(0.8);
@@ -76,23 +78,31 @@ inline void generateSurface()
                 
                 for ( int k = 0 ; k < disNum; k++)
                 {
-                    objPointer->DivideFace(divideParameter/(k+1));
+//                    objPointer->DivideAllFace(0);
+//                    objPointer->DivideFace(divideParameter/(k+1));
                 }
+                
+//                objPointer->Distortion( distortionParameter );
                 
                 
 //                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
                 
                 // move obj to corresponding grid with a little random shift
-                a = getUniformRandomNumber( - 0.2, 0.2 );
-                b = getUniformRandomNumber( - 0.2, 0.2 );
-                c = getUniformRandomNumber(   0.0, 0.5 );
-                
+//                a = getUniformRandomNumber( - 0.2, 0.2 );
+//                b = getUniformRandomNumber( - 0.2, 0.2 );
+//                c = getUniformRandomNumber(   0.0, 0.5 );
+//                
 //                objPointer->MoveObject(
 //                    ( i - WIDTH /2 + a  ),
 //                    ( j - HEIGHT/2 + b ),
 //                                   + c
 //                    );
-                
+//                objPointer->MoveObject(
+//                    ( i - WIDTH /2   ),
+//                    ( j - HEIGHT/2  ),
+//                                   c/2 + 0.1
+//                    );
+
 //                myscene.AddObject( objPointer );
 //                
 //                objPointer = new GaussianSurface(0.5);
@@ -127,7 +137,7 @@ inline void generateSurface()
             Rot_X
             );
 
-    
+    sprintf(filename, "test.ply");
     myscene.writeScene(filename);
 }
 

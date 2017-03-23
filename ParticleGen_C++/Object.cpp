@@ -71,6 +71,19 @@ void ShapeObject::RandomlyRotate()
     }
 }
 
+void ShapeObject::PrintAllFace()
+{
+    printf("\n Print all face \n");
+    size_t all_face_num = face_list.size();
+    
+    for (size_t i = 0; i< all_face_num; i++)
+    {
+        Face * chosenFace = & face_list[i];
+        
+        chosenFace->printFace();
+    }
+
+}
 
 // angleX angleY angleZ range from 0 - 180 degrees
 void ShapeObject::RandomlyRotate(
@@ -142,6 +155,22 @@ void ShapeObject::SlightlyRotateAlongXY(double angle)
 }
 
 
+
+void ShapeObject::DivideAllFace(double movement)
+{
+    size_t all_face_num = face_list.size();
+    
+    for (size_t i = 0; i< all_face_num; i++)
+    {
+        Face * chosenFace = & face_list[0];
+//        PrintAllFace();
+        DivideOneFace(chosenFace,0,movement);
+        
+//        PrintAllFace();
+    }
+}
+
+
 void ShapeObject::DivideFace(double movement)
 {
     int face_num = getUniformRandomNumber( 0 , face_list.size() );
@@ -153,6 +182,16 @@ void ShapeObject::DivideFace(double movement)
     //printf("Chosen face %d \n",face_num);
     
     Face * chosenFace = & face_list[face_num];
+    
+    DivideOneFace(chosenFace,face_num,movement);
+}
+
+
+void ShapeObject::DivideOneFace(
+    Face * chosenFace,
+    int chosenFaceIndex,
+    double movement)
+{
     
     // vertex number of this face
     int numVertex = chosenFace->getTotalIndexNum();
@@ -205,8 +244,12 @@ void ShapeObject::DivideFace(double movement)
     }
     
     // delete chosen face
-    deleteFace(face_num);
+    deleteFace(chosenFaceIndex);
 }
+
+
+
+
 
 void ShapeObject::deleteFace(int faceIndex)
 {
