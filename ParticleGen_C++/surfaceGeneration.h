@@ -13,11 +13,11 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   1
-#define HEIGHT  1
+#define WIDTH   10
+#define HEIGHT  10
 
 // denstity of particle per unit grid
-#define DENSITY 1
+#define DENSITY 2
 
 #define HasPlane false
 
@@ -35,7 +35,7 @@ inline void generateSurface()
 //    int     Rot_X                   = 45;
     
     int     disNum                  =  3;
-    double  distortionParameter     = 0.1;
+    double  distortionParameter     = 0.05;
     double  divideParameter         = 0.2;
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
@@ -65,7 +65,7 @@ inline void generateSurface()
                 double b = getUniformRandomNumber(0.0,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
-                objPointer  = new Fine_Cube(3);
+                objPointer  = new Fine_Cube(7,a,b,c);
                 
     //            if ( chooseObj < 1.0)
     //                objSet[i][j][l]  = Cube(0.8);
@@ -85,7 +85,7 @@ inline void generateSurface()
 //                objPointer->Distortion( distortionParameter );
                 
                 
-//                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
+                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
                 
                 // move obj to corresponding grid with a little random shift
 //                a = getUniformRandomNumber( - 0.2, 0.2 );
@@ -97,11 +97,12 @@ inline void generateSurface()
 //                    ( j - HEIGHT/2 + b ),
 //                                   + c
 //                    );
-//                objPointer->MoveObject(
-//                    ( i - WIDTH /2   ),
-//                    ( j - HEIGHT/2  ),
-//                                   c/2 + 0.1
-//                    );
+                objPointer->MoveObject(
+                    ( i - WIDTH /2   ),
+                    ( j - HEIGHT/2  ),
+                                   0
+                                
+                    );
 
 //                myscene.AddObject( objPointer );
 //                

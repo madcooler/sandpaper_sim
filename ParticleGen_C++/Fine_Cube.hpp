@@ -94,13 +94,13 @@ public:
         
         
         
-        AddShape(left);
-        AddShape(right);
-        AddShape(front);
-        AddShape(back);
-        
-        AddShape(top);
         AddShape(bottom);
+        AddShape(top);
+        ConnectShape(left, 0.001);
+        ConnectShape(right, 0.001);
+        ConnectShape(front, 0.001);
+        ConnectShape(back, 0.001);
+
 
         ScaleObject(a, b, c);
     
