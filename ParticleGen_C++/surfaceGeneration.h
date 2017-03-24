@@ -13,19 +13,20 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   10
-#define HEIGHT  10
+#define WIDTH   100
+#define HEIGHT  100
 
 // denstity of particle per unit grid
-#define DENSITY 2
+#define DENSITY 1
 
-#define HasPlane false
+//#define HasPlane false
+#define HasPlane true
 
 inline void generateSurface()
 {
     Scene myscene;
     
-    Plane p1( WIDTH ,HEIGHT);
+    Plane p1(WIDTH * 4 + 1, WIDTH ,HEIGHT);
     
     // parameters used in siggraph mesh
 //    int     disNum                  =  1;
@@ -40,72 +41,54 @@ inline void generateSurface()
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
     
-    if(HasPlane)
-    {
-        myscene.AddObject( & p1 );
-    }
+    double plane_distortion         = 0.03;
+    p1.Distortion(plane_distortion);
     
     
     ShapeObject * objPointer;
+    ShapeObject * planePointer;
     
-//    objPointer = new Mushroom(0.5);
-//    myscene.AddObject( objPointer );
+
     
     for(int i = 0; i < WIDTH; i++)
         for( int j = 0; j< HEIGHT;j++)
+        {
+
             for( int l = 0; l < DENSITY; l++ )
             {
                 
-                //int chooseObj = getUniformRandomNumber(0.0,2.0);
-//                double a = getUniformRandomNumber(0.0,1.0);
-//                double b = getUniformRandomNumber(0.0,1.0);
-//                double c = getUniformRandomNumber(0.5,1.0);
-
-                double a = getUniformRandomNumber(0.0,1.0);
-                double b = getUniformRandomNumber(0.0,1.0);
+                double a = getUniformRandomNumber(0.1,1.0);
+                double b = getUniformRandomNumber(0.1,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
-                objPointer  = new Fine_Cube(7,a,b,c);
-                
-    //            if ( chooseObj < 1.0)
-    //                objSet[i][j][l]  = Cube(0.8);
-    //            else
-    //                objSet[i][j][l]  = Tetrahedron(0.8);
-                
+                objPointer  = new Fine_Cube(5,a,b,c);
                 
                 
                 objPointer->Distortion( distortionParameter );
                 
-                for ( int k = 0 ; k < disNum; k++)
-                {
-//                    objPointer->DivideAllFace(0);
-//                    objPointer->DivideFace(divideParameter/(k+1));
-                }
-                
-//                objPointer->Distortion( distortionParameter );
+//                for ( int k = 0 ; k < disNum; k++)
+//                {
+////                    objPointer->DivideAllFace(0);
+////                    objPointer->DivideFace(divideParameter/(k+1));
+//                }
                 
                 
                 objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
                 
                 // move obj to corresponding grid with a little random shift
-//                a = getUniformRandomNumber( - 0.2, 0.2 );
-//                b = getUniformRandomNumber( - 0.2, 0.2 );
-//                c = getUniformRandomNumber(   0.0, 0.5 );
-//                
-//                objPointer->MoveObject(
-//                    ( i - WIDTH /2 + a  ),
-//                    ( j - HEIGHT/2 + b ),
-//                                   + c
-//                    );
+                a = getUniformRandomNumber( - 0.2, 0.2 );
+                b = getUniformRandomNumber( - 0.2, 0.2 );
+                c = getUniformRandomNumber( - 0.2, 0.5 );
+                
                 objPointer->MoveObject(
-                    ( i - WIDTH /2   ),
-                    ( j - HEIGHT/2  ),
-                                   0
-                                
+                    ( i - WIDTH /2 + a  ),
+                    ( j - HEIGHT/2 + b ),
+                                   + c
                     );
-
-//                myscene.AddObject( objPointer );
-//                
+                
+//               planePointer->ConnectShape(objPointer, 0.2);
+                
+//
 //                objPointer = new GaussianSurface(0.5);
 //                
 //                objPointer->MoveObject(
@@ -114,8 +97,19 @@ inline void generateSurface()
 //                      0
 //                    );
                 
-                myscene.AddObject( objPointer );
+//                myscene.AddObject( objPointer );
+
+                p1.ConnectShape(objPointer, 0.2);
             }
+            
+//            myscene.AddObject( planePointer );
+        }
+    
+        if(HasPlane)
+        {
+            myscene.AddObject( & p1 );
+        }
+
     
     char filename[50];
 //    sprintf(filename, "c_%d_%d_%d_%d_%d_%d.ply",
@@ -129,16 +123,16 @@ inline void generateSurface()
     sprintf(filename, "c_%d_line.ply",
             HEIGHT
             );
-    sprintf(filename, "c_%d_%d_%d_%d_%d_%d.ply",
+    sprintf(filename, "c_%d_%d_%d_%d.ply",
             WIDTH,
             DENSITY,
-            disNum,
-            (int)(divideParameter * 10),
-            (int)(distortionParameter * 10),
+//            disNum,
+//            (int)(divideParameter * 10),
+            (int)(distortionParameter * 100),
             Rot_X
             );
 
-    sprintf(filename, "test.ply");
+//    sprintf(filename, "test.ply");
     myscene.writeScene(filename);
 }
 

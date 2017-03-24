@@ -217,7 +217,7 @@ public:
     
     void PrintAllFace();
     
-    void ConnectShape(const ShapeObject * obj,double threshold);
+    virtual void ConnectShape(const ShapeObject * obj,double threshold);
 };
 
 class Cube : public ShapeObject
@@ -378,7 +378,8 @@ public:
 
 class Plane : public ShapeObject
 {
-
+    size_t plane_ver_num;
+    size_t plane_face_num;
 public:
     Plane(): ShapeObject()
     {
@@ -410,6 +411,48 @@ public:
         
         AddFace('0', 3 , vert_ptrs[0]);
         AddFace('0', 3 , vert_ptrs[1]);
+    }
+    
+    Plane(int res,double width, double height): ShapeObject()
+    {
+        double x;
+        double y;
+        double z = 0;
+        
+        for(int i = 0; i < res; i++)
+        {
+            for(int j = 0; j < res; j++)
+            {
+                x = ( (double)(i - res/2 )/(res-1)) * width;
+                y = ( (double)(j - res/2 )/(res-1)) * height;
+                AddVertex(x, y, z);
+            }
+        }
+    
+    
+        for(int i = 0; i < res - 1; i++)
+            for(int j = 0; j < res - 1; j++)
+            {
+                Vertex_Indices vert_ptrs[] = {
+                        {   i * res + j,
+                            (i+1) * res + j,
+                            i * res + j+1
+                            
+                        },
+                    
+                        {   i*res+j+1,
+                            (i+1) * res + j,
+                            (i+1) * res + j+1
+                        },
+                    };
+                
+                AddFace('0', 3 , vert_ptrs[0]);
+                AddFace('0', 3 , vert_ptrs[1]);
+            }
+        
+        plane_ver_num = res * res;
+        plane_face_num = 2 * (res-1) * (res-1);
+        
     }
     
     Plane(int res): ShapeObject()
@@ -448,9 +491,12 @@ public:
                 AddFace('0', 3 , vert_ptrs[0]);
                 AddFace('0', 3 , vert_ptrs[1]);
             }
-
+            
+        plane_ver_num = res * res;
+        plane_face_num = 2 * (res-1) * (res-1);
     }
-
+    
+    void ConnectShape(const ShapeObject * obj,double threshold);
     
 };
 
@@ -734,7 +780,7 @@ public:
         double y;
         double z;
         
-        double lowest = 0.0;
+//        double lowest = 0.0;
         
         int count = 0;
         double y_pos;
