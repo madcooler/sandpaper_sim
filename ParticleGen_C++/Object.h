@@ -10,6 +10,7 @@
 #define Object_h
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 typedef int Vertex_Indices[3];
 typedef int Vertex_Indices_4[4];
@@ -121,9 +122,10 @@ public:
     for( int i = 0 ; i < nverts ; i ++ )
     {
         int ind = verts[i];
-        printf(" %d ",ind);
+        std::cout<<ind<<" ";
+//        printf(" %d ",ind);
     }
-
+    std::cout<<std::endl;
   }
 } ;
 
@@ -444,6 +446,29 @@ public:
     
     
 };
+
+class CirclePoint : public ShapeObject
+{
+
+public:
+    CirclePoint()
+    {
+    }
+    CirclePoint( double R ): ShapeObject()
+    {
+        size_t circle_num = 10;
+    
+        for(double phi = 0; phi < 2 * 3.1415; phi += 2 *3.1415/circle_num)
+        {
+            Vertex v;
+            v.x = R*cos(phi);
+            v.y = R*sin(phi);
+            v.z = 0;
+            AddVertex(&v);
+        }
+    }
+};
+
 
 
 class Plane : public ShapeObject

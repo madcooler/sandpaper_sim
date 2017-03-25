@@ -75,7 +75,7 @@ void Fine_Cube::CreateUnityCube(int res)
 //    ConnectShape(right, 0.001);
 //    ConnectShape(front, 0.001);
 //    ConnectShape(back , 0.001);
-//    
+//
 //    
 //    for (size_t i = 0; i<face_list.size(); i++)
 //    {

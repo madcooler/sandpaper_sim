@@ -254,19 +254,19 @@ void ShapeObject::ConnectShape(
 //        
 //        }
     double min = 0;
-    int min_entry = -1;
+    int replacement_pos = -1;
     
     // nearest vertices in circle
     std::vector<size_t> origin_ver;
     
-    // vertices in obj needs to be replaced
-    std::vector<size_t> obj_ver;
+    // vertices in current object needs to be replaced
+    std::vector<size_t> replaced_ver;
     
-    // find near vertices
+    // find nearest vertices
     for(size_t j = 0; j < origin_ver_size; j++)
     {
         min = 9999999999;
-        min_entry = -1;
+        replacement_pos = -1;
         
         for(size_t i = origin_ver_size; i < origin_ver_size + obj->vertex_list.size();i++)
         {
@@ -277,28 +277,48 @@ void ShapeObject::ConnectShape(
                     && dis < min)
             {
                 min = dis;
-                min_entry = i;
+                replacement_pos = i;
             }
         
         
         }
         
-        if(min_entry > 0)
+        if(replacement_pos > 0)
         {
-            origin_ver.push_back(min_entry);
-            obj_ver.push_back(j);
+            origin_ver.push_back(replacement_pos);
+            replaced_ver.push_back(j);
         }
         
         
     }
     
-    for(size_t j = 0; j < obj_ver.size(); j++)
+//    for(size_t j = 0; j < replaced_ver.size(); j++)
+//    {
+//        Face new_face;
+//        
+//        int x = replaced_ver[j];
+//        int y = origin_ver[j];
+//        
+//        int z = origin_ver[j] + 1;
+//        
+//        if(z==vertex_list.size())
+//            z = origin_ver_size;
+//        
+//        Vertex_Indices vert_ptrs = {
+//            x, y, z
+//        };
+//        
+//        AddFace('0', 3 , vert_ptrs);
+//    }
+//    PrintAllFace();
+    
+    for(size_t j = 0; j < replaced_ver.size(); j++)
     {
         // go over new added face from obj
         for(size_t i = 0; i < origin_face_size;i++)
         {
 
-            if(face_list[i].verts[0] == obj_ver[j]
+            if(face_list[i].verts[0] == replaced_ver[j]
                 && face_list[i].verts[1] != origin_ver[j]
                 && face_list[i].verts[2] != origin_ver[j])
                 {
@@ -306,7 +326,7 @@ void ShapeObject::ConnectShape(
                     continue;
                 }
             if(face_list[i].verts[0] != origin_ver[j]
-                && face_list[i].verts[1] == obj_ver[j]
+                && face_list[i].verts[1] == replaced_ver[j]
                 && face_list[i].verts[2] != origin_ver[j])
                 {
                     face_list[i].verts[1] = origin_ver[j];
@@ -315,7 +335,7 @@ void ShapeObject::ConnectShape(
                 }
             if(face_list[i].verts[0] != origin_ver[j]
                 && face_list[i].verts[1] != origin_ver[j]
-                && face_list[i].verts[2] == obj_ver[j])
+                && face_list[i].verts[2] == replaced_ver[j])
                 {
                     face_list[i].verts[2] = origin_ver[j];
                     continue;
@@ -324,7 +344,13 @@ void ShapeObject::ConnectShape(
 
         }
     }
-
+    
+//    PrintAllFace();
+//    for(size_t i = 0; i < origin_face_size;i++)
+//    {
+//        face_list[i].printFace();
+//    
+//    }
 
     // replace index
     // go over new added face
@@ -515,102 +541,14 @@ void ShapeObject::AddTails(double minDis, double maxDis)
     center_x /= vertex_list.size();
     center_y /= vertex_list.size();
     
-    
-//    std::vector<Vertex> circle;
-//    
-//
-//    
-//    size_t circle_num = 10;
-//    
-//    for(double phi = 0; phi < 2 * 3.1415; phi += 2 *3.1415/circle_num)
-//    {
-//        Vertex v;
-//        v.x = R*cos(phi) + center_x;
-//        v.y = R*sin(phi) + center_y;
-//        v.z = 0;
-//        AddVertex(&v);
-//    }
-    
+        
     double R = sqrt(length_a*length_a+length_b*length_b)/2 + 0.05;
-    Circle cir(R);
+    CirclePoint cir(R);
     cir.MoveObject(center_x, center_y, 0);
     
     
     ConnectShape(&cir, minDis, maxDis);
 
-//    double min = 0;
-//    int min_entry = -1;
-//    
-//    // nearest vertices in circle
-//    std::vector<size_t> origin_ver;
-//    
-//    // vertices in obj needs to be replaced
-//    std::vector<size_t> obj_ver;
-//    
-//    // find near vertices
-//    for(size_t j = 0; j < origin_ver_size; j++)
-//    {
-//        min = 999;
-//        min_entry = -1;
-//        
-//        for(size_t i = origin_ver_size; i < origin_ver_size + 10;i++)
-//        {
-//            double dis = vertex_list[i].distance(vertex_list[j]);
-//            if(  dis > minDis
-//                    && dis < maxDis
-//                    && vertex_list[j].z < (length_c/3)
-//                    && dis < min)
-//            {
-//                min = dis;
-//                min_entry = i;
-//            }
-//        
-//        
-//        }
-//        
-//        if(min_entry > 0)
-//        {
-//            origin_ver.push_back(min_entry);
-//            obj_ver.push_back(j);
-//        }
-//        
-//        
-//    }
-//    
-//    // go over all vertices near to original obj
-//    for(size_t j = 0; j < obj_ver.size(); j++)
-//    {
-//        // go over new added face from obj
-//        for(size_t i = 0; i < origin_face_size;i++)
-//        {
-//
-//            if(face_list[i].verts[0] == obj_ver[j]
-//                && face_list[i].verts[1] != origin_ver[j]
-//                && face_list[i].verts[2] != origin_ver[j])
-//                {
-//                    face_list[i].verts[0] = origin_ver[j];
-//                    
-//                }
-//            if(face_list[i].verts[0] != origin_ver[j]
-//                && face_list[i].verts[1] == obj_ver[j]
-//                && face_list[i].verts[2] != origin_ver[j])
-//                {
-//                    face_list[i].verts[1] = origin_ver[j];
-//                    
-//                }
-//            if(face_list[i].verts[0] != origin_ver[j]
-//                && face_list[i].verts[1] != origin_ver[j]
-//                && face_list[i].verts[2] == obj_ver[j])
-//                {
-//                    face_list[i].verts[2] = origin_ver[j];
-//                    
-//                }
-//
-//        }
-//    }
-//    
-//    origin_ver.empty();
-//    obj_ver.empty();
 
 }
 

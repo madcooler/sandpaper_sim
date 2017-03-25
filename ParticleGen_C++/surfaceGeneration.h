@@ -13,8 +13,11 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   50
-#define HEIGHT  50
+#define WIDTH   80
+#define HEIGHT  WIDTH
+
+//#define DebugMode   true
+#define DebugMode   false
 
 // denstity of particle per unit grid
 #define DENSITY 3
@@ -26,7 +29,7 @@ inline void generateSurface()
 {
     Scene myscene;
     
-    Plane p1(WIDTH * 4 + 1, WIDTH ,HEIGHT);
+    Plane p1(WIDTH * 2 + 1, WIDTH ,HEIGHT);
     
     // parameters used in siggraph mesh
 //    int     disNum                  =  1;
@@ -41,12 +44,11 @@ inline void generateSurface()
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
     
-    double plane_distortion         = 0.05;
+    double plane_distortion         = 0.03;
     p1.Distortion(plane_distortion);
     
     
     ShapeObject * objPointer;
-    Circle      * tails;
     
     for(int i = 0; i < WIDTH; i++)
         for( int j = 0; j< HEIGHT;j++)
@@ -55,28 +57,35 @@ inline void generateSurface()
             for( int l = 0; l < DENSITY; l++ )
             {
                 
-                double a = getUniformRandomNumber(0.1,1.2);
-                double b = getUniformRandomNumber(0.1,1.2);
+                double a = getUniformRandomNumber(0.1,1.0);
+                double b = getUniformRandomNumber(0.1,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
-                objPointer  = new Fine_Cube(5,a,b,c);
+                if (DebugMode)
+                {
+                    objPointer  = new Fine_Cube(5,0.5,0.5,0.5);
+                }
                 
-//                tails       = new Circle()
-//                objPointer->Distortion( distortionParameter );
+
+//                objPointer = new Plane(3,0.5,0.5);
                 
+                if(!DebugMode)
+                {
+                    objPointer  = new Fine_Cube(5,a,b,c);
+                    objPointer->Distortion( distortionParameter );
+                    objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
                 
-//                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
-                
-                // move obj to corresponding grid with a little random shift
-                a = getUniformRandomNumber( - 0.35, 0.35 );
-                b = getUniformRandomNumber( - 0.35, 0.35 );
-                c = getUniformRandomNumber( - 0.2, 0.2 );
-                
-                objPointer->MoveObject(
-                    ( i - WIDTH /2 + a  ),
-                    ( j - HEIGHT/2 + b ),
-                                   + c
-                    );
+                    // move obj to corresponding grid with a little random shift
+                    a = getUniformRandomNumber( - 0.35, 0.35 );
+                    b = getUniformRandomNumber( - 0.35, 0.35 );
+                    c = getUniformRandomNumber( - 0.2, 0.2 );
+                    
+                    objPointer->MoveObject(
+                        ( i - WIDTH /2 + a  ),
+                        ( j - HEIGHT/2 + b ),
+                                       + c
+                        );
+                }
                 
                 objPointer->AddTails(0.1, 0.7);
 //                p1.ConnectShape(objPointer, 0.1, 0.7);
@@ -113,7 +122,7 @@ inline void generateSurface()
             Rot_X
             );
 
-//    sprintf(filename, "test.ply");
+    sprintf(filename, "test.ply");
     myscene.writeScene(filename);
 }
 
