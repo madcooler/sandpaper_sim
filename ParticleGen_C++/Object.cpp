@@ -34,6 +34,10 @@ void ShapeObject::ScaleObject(
     {
         vertex_list[i].Scale(a,b,c);
     }
+    
+    length_a *= a;
+    length_b *= b;
+    length_c *= c;
 }
 
 void ShapeObject::Distortion(double movement)
@@ -156,19 +160,19 @@ void ShapeObject::SlightlyRotateAlongXY(double angle)
 
 void ShapeObject::AddShape(const ShapeObject * shape)
 {
-    int original_size = vertex_list.size();
+    size_t original_size = vertex_list.size();
     
-    for (int i = 0; i < shape->vertex_list.size(); i++)
+    for (size_t i = 0; i < shape->vertex_list.size(); i++)
     {
         vertex_list.push_back(shape->vertex_list[i]);
     }
     
     
-    for (int i = 0; i < shape->face_list.size(); i++)
+    for (size_t i = 0; i < shape->face_list.size(); i++)
     {
         Face newface = shape->face_list[i];
         
-        for(int j =0;j<newface.verts.size();j++)
+        for(size_t j =0;j<newface.verts.size();j++)
         {
             newface.verts[j] += original_size;
         }
@@ -222,6 +226,126 @@ void ShapeObject::ConnectShape(const ShapeObject *obj, double threshold)
     }
     
 }
+
+void ShapeObject::ConnectShape(
+    const ShapeObject *obj,
+    double minDis,
+    double maxDis)
+{
+    size_t origin_ver_size  = vertex_list.size();
+    size_t origin_face_size = face_list.size();
+    
+    AddShape(obj);
+    
+//    std::vector<size_t> origin_ver;
+//    std::vector<size_t> obj_ver;
+//    
+//    for(size_t i = 0; i < origin_ver_size;i++)
+//        for(size_t j = origin_ver_size; j < vertex_list.size(); j++)
+//        {
+//            double dis = vertex_list[i].distance(vertex_list[j]);
+//            if(  dis > minDis && dis<maxDis)
+//            {
+//                origin_ver.push_back(i);
+//                obj_ver.push_back(j);
+//
+//            }
+//        
+//        
+//        }
+    double min = 0;
+    int min_entry = -1;
+    
+    // nearest vertices in circle
+    std::vector<size_t> origin_ver;
+    
+    // vertices in obj needs to be replaced
+    std::vector<size_t> obj_ver;
+    
+    // find near vertices
+    for(size_t j = 0; j < origin_ver_size; j++)
+    {
+        min = 9999999999;
+        min_entry = -1;
+        
+        for(size_t i = origin_ver_size; i < origin_ver_size + obj->vertex_list.size();i++)
+        {
+            double dis = vertex_list[i].distance(vertex_list[j]);
+            if(  dis > minDis
+                    && dis < maxDis
+                    && vertex_list[j].z < (length_c/3)
+                    && dis < min)
+            {
+                min = dis;
+                min_entry = i;
+            }
+        
+        
+        }
+        
+        if(min_entry > 0)
+        {
+            origin_ver.push_back(min_entry);
+            obj_ver.push_back(j);
+        }
+        
+        
+    }
+    
+    for(size_t j = 0; j < obj_ver.size(); j++)
+    {
+        // go over new added face from obj
+        for(size_t i = 0; i < origin_face_size;i++)
+        {
+
+            if(face_list[i].verts[0] == obj_ver[j]
+                && face_list[i].verts[1] != origin_ver[j]
+                && face_list[i].verts[2] != origin_ver[j])
+                {
+                    face_list[i].verts[0] = origin_ver[j];
+                    continue;
+                }
+            if(face_list[i].verts[0] != origin_ver[j]
+                && face_list[i].verts[1] == obj_ver[j]
+                && face_list[i].verts[2] != origin_ver[j])
+                {
+                    face_list[i].verts[1] = origin_ver[j];
+                    continue;
+
+                }
+            if(face_list[i].verts[0] != origin_ver[j]
+                && face_list[i].verts[1] != origin_ver[j]
+                && face_list[i].verts[2] == obj_ver[j])
+                {
+                    face_list[i].verts[2] = origin_ver[j];
+                    continue;
+
+                }
+
+        }
+    }
+
+
+    // replace index
+    // go over new added face
+//    for(size_t i = origin_face_size; i < face_list.size();i++)
+//    {
+//        // go over all vertices near to original obj
+//        for(size_t j = 0; j < obj_ver.size(); j++)
+//        {
+//            for(size_t k = 0; k < face_list[i].verts.size(); k++)
+//            {
+//                if(face_list[i].verts[k] == obj_ver[j])
+//                {
+//                    face_list[i].verts[k] = origin_ver[j];
+//                    continue;
+//                }
+//            }
+//        }
+//    }
+    
+}
+
 
 
 void ShapeObject::DivideAllFace(double movement)
@@ -325,6 +449,8 @@ void ShapeObject::deleteFace(int faceIndex)
 }
 
 
+
+
 // merge near vertices ONLY to Plane
 void Plane::ConnectShape(const ShapeObject *obj, double threshold)
 {
@@ -371,6 +497,251 @@ void Plane::ConnectShape(const ShapeObject *obj, double threshold)
     }
     
 }
+
+void ShapeObject::AddTails(double minDis, double maxDis)
+{
+//    size_t origin_ver_size  = vertex_list.size();
+//    size_t origin_face_size = face_list.size();
+    
+    double center_x = 0;
+    double center_y = 0;
+    
+    for(size_t j = 0; j < vertex_list.size(); j++)
+    {
+        center_x += vertex_list[j].x;
+        center_y += vertex_list[j].y;
+    }
+    
+    center_x /= vertex_list.size();
+    center_y /= vertex_list.size();
+    
+    
+//    std::vector<Vertex> circle;
+//    
+//
+//    
+//    size_t circle_num = 10;
+//    
+//    for(double phi = 0; phi < 2 * 3.1415; phi += 2 *3.1415/circle_num)
+//    {
+//        Vertex v;
+//        v.x = R*cos(phi) + center_x;
+//        v.y = R*sin(phi) + center_y;
+//        v.z = 0;
+//        AddVertex(&v);
+//    }
+    
+    double R = sqrt(length_a*length_a+length_b*length_b)/2 + 0.05;
+    Circle cir(R);
+    cir.MoveObject(center_x, center_y, 0);
+    
+    
+    ConnectShape(&cir, minDis, maxDis);
+
+//    double min = 0;
+//    int min_entry = -1;
+//    
+//    // nearest vertices in circle
+//    std::vector<size_t> origin_ver;
+//    
+//    // vertices in obj needs to be replaced
+//    std::vector<size_t> obj_ver;
+//    
+//    // find near vertices
+//    for(size_t j = 0; j < origin_ver_size; j++)
+//    {
+//        min = 999;
+//        min_entry = -1;
+//        
+//        for(size_t i = origin_ver_size; i < origin_ver_size + 10;i++)
+//        {
+//            double dis = vertex_list[i].distance(vertex_list[j]);
+//            if(  dis > minDis
+//                    && dis < maxDis
+//                    && vertex_list[j].z < (length_c/3)
+//                    && dis < min)
+//            {
+//                min = dis;
+//                min_entry = i;
+//            }
+//        
+//        
+//        }
+//        
+//        if(min_entry > 0)
+//        {
+//            origin_ver.push_back(min_entry);
+//            obj_ver.push_back(j);
+//        }
+//        
+//        
+//    }
+//    
+//    // go over all vertices near to original obj
+//    for(size_t j = 0; j < obj_ver.size(); j++)
+//    {
+//        // go over new added face from obj
+//        for(size_t i = 0; i < origin_face_size;i++)
+//        {
+//
+//            if(face_list[i].verts[0] == obj_ver[j]
+//                && face_list[i].verts[1] != origin_ver[j]
+//                && face_list[i].verts[2] != origin_ver[j])
+//                {
+//                    face_list[i].verts[0] = origin_ver[j];
+//                    
+//                }
+//            if(face_list[i].verts[0] != origin_ver[j]
+//                && face_list[i].verts[1] == obj_ver[j]
+//                && face_list[i].verts[2] != origin_ver[j])
+//                {
+//                    face_list[i].verts[1] = origin_ver[j];
+//                    
+//                }
+//            if(face_list[i].verts[0] != origin_ver[j]
+//                && face_list[i].verts[1] != origin_ver[j]
+//                && face_list[i].verts[2] == obj_ver[j])
+//                {
+//                    face_list[i].verts[2] = origin_ver[j];
+//                    
+//                }
+//
+//        }
+//    }
+//    
+//    origin_ver.empty();
+//    obj_ver.empty();
+
+}
+
+
+//void Plane::ConnectShape(
+//        const ShapeObject *obj,
+//        double minDis,
+//        double maxDis)
+//{
+//    size_t origin_ver_size  = vertex_list.size();
+//    size_t origin_face_size = face_list.size();
+//    
+//    AddShape(obj);
+//    
+//    size_t with_obj_ver_size  = vertex_list.size();
+//    
+//    
+//    // nearest vertices in circle
+//    std::vector<size_t> origin_ver;
+//    
+//    // vertices in obj needs to be replaced
+//    std::vector<size_t> obj_ver;
+//    
+//    
+//    double center_x = 0;
+//    double center_y = 0;
+//    
+//    for(size_t j = 0; j < obj->vertex_list.size(); j++)
+//    {
+//        center_x += obj->vertex_list[j].x;
+//        center_y += obj->vertex_list[j].y;
+//    }
+//    
+//    center_x /= obj->vertex_list.size();
+//    center_y /= obj->vertex_list.size();
+//    
+//    
+//    std::vector<Vertex> circle;
+//    
+//    double R = sqrt(obj->length_a*obj->length_a+obj->length_b*obj->length_b)/2 + 0.05;
+//    
+//    size_t circle_num = 10;
+//    
+//    for(double phi = 0; phi < 2 * 3.1415; phi += 2 *3.1415/circle_num)
+//    {
+//        Vertex v;
+//        v.x = R*cos(phi) + center_x;
+//        v.y = R*sin(phi) + center_y;
+//        v.z = 0;
+//        AddVertex(&v);
+//    }
+//    
+//    double min = 0;
+//    int min_entry = -1;
+//    
+//    // find near vertices
+//    for(size_t j = origin_ver_size; j < with_obj_ver_size; j++)
+//    {
+//        min = 999;
+//        min_entry = -1;
+//        
+//        for(size_t i = with_obj_ver_size; i < with_obj_ver_size + circle_num;i++)
+//        {
+//            double dis = vertex_list[i].distance(vertex_list[j]);
+//            if(  dis > minDis
+//                    && dis < maxDis
+//                    && vertex_list[j].z < (obj->length_c/3)
+//                    && dis < min)
+//            {
+//                min = dis;
+//                min_entry = i;
+//            }
+//        
+//        
+//        }
+//        
+//        if(min_entry > 0)
+//        {
+//            origin_ver.push_back(min_entry);
+//            obj_ver.push_back(j);
+//        }
+//        
+//        
+//    }
+//    // replace index
+//    
+//    // go over all vertices near to original obj
+//    for(size_t j = 0; j < obj_ver.size(); j++)
+//    {
+//        // go over new added face from obj
+//        for(size_t i = origin_face_size; i < face_list.size();i++)
+//        {
+////            for(size_t k = 0; k < face_list[i].verts.size(); k++)
+////            {
+////                if(face_list[i].verts[k] == obj_ver[j])
+////                {
+////                    face_list[i].verts[k] = origin_ver[j];
+////                    continue;
+////                }
+////            }
+//
+////            if(face_list[i].verts[0] == obj_ver[j]
+////                && face_list[i].verts[1] != origin_ver[j]
+////                && face_list[i].verts[2] != origin_ver[j])
+////                {
+////                    face_list[i].verts[0] = origin_ver[j];
+////                    
+////                }
+////            if(face_list[i].verts[0] != origin_ver[j]
+////                && face_list[i].verts[1] == obj_ver[j]
+////                && face_list[i].verts[2] != origin_ver[j])
+////                {
+////                    face_list[i].verts[1] = origin_ver[j];
+////                    
+////                }
+////            if(face_list[i].verts[0] != origin_ver[j]
+////                && face_list[i].verts[1] != origin_ver[j]
+////                && face_list[i].verts[2] == obj_ver[j])
+////                {
+////                    face_list[i].verts[2] = origin_ver[j];
+////                    
+////                }
+//
+//        }
+//    }
+//    
+//    
+//
+//    origin_ver.empty();
+//    obj_ver.empty();
+//}
 
 
 void Vertex::RotX(double theta)

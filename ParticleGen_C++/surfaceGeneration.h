@@ -13,11 +13,11 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   100
-#define HEIGHT  100
+#define WIDTH   50
+#define HEIGHT  50
 
 // denstity of particle per unit grid
-#define DENSITY 1
+#define DENSITY 3
 
 //#define HasPlane false
 #define HasPlane true
@@ -35,20 +35,18 @@ inline void generateSurface()
 ////    double  cubeSize                = 0.5;
 //    int     Rot_X                   = 45;
     
-    int     disNum                  =  3;
+//    int     disNum                  =  3;
     double  distortionParameter     = 0.05;
-    double  divideParameter         = 0.2;
+//    double  divideParameter         = 0.2;
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
     
-    double plane_distortion         = 0.03;
+    double plane_distortion         = 0.05;
     p1.Distortion(plane_distortion);
     
     
     ShapeObject * objPointer;
-    ShapeObject * planePointer;
-    
-
+    Circle      * tails;
     
     for(int i = 0; i < WIDTH; i++)
         for( int j = 0; j< HEIGHT;j++)
@@ -57,28 +55,22 @@ inline void generateSurface()
             for( int l = 0; l < DENSITY; l++ )
             {
                 
-                double a = getUniformRandomNumber(0.1,1.0);
-                double b = getUniformRandomNumber(0.1,1.0);
+                double a = getUniformRandomNumber(0.1,1.2);
+                double b = getUniformRandomNumber(0.1,1.2);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
                 objPointer  = new Fine_Cube(5,a,b,c);
                 
-                
-                objPointer->Distortion( distortionParameter );
-                
-//                for ( int k = 0 ; k < disNum; k++)
-//                {
-////                    objPointer->DivideAllFace(0);
-////                    objPointer->DivideFace(divideParameter/(k+1));
-//                }
+//                tails       = new Circle()
+//                objPointer->Distortion( distortionParameter );
                 
                 
-                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
+//                objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
                 
                 // move obj to corresponding grid with a little random shift
-                a = getUniformRandomNumber( - 0.2, 0.2 );
-                b = getUniformRandomNumber( - 0.2, 0.2 );
-                c = getUniformRandomNumber( - 0.2, 0.5 );
+                a = getUniformRandomNumber( - 0.35, 0.35 );
+                b = getUniformRandomNumber( - 0.35, 0.35 );
+                c = getUniformRandomNumber( - 0.2, 0.2 );
                 
                 objPointer->MoveObject(
                     ( i - WIDTH /2 + a  ),
@@ -86,23 +78,12 @@ inline void generateSurface()
                                    + c
                     );
                 
-//               planePointer->ConnectShape(objPointer, 0.2);
-                
-//
-//                objPointer = new GaussianSurface(0.5);
-//                
-//                objPointer->MoveObject(
-//                    ( i - WIDTH /2  ),
-//                    ( j - HEIGHT/2  ),
-//                      0
-//                    );
-                
-//                myscene.AddObject( objPointer );
+                objPointer->AddTails(0.1, 0.7);
+//                p1.ConnectShape(objPointer, 0.1, 0.7);
 
-                p1.ConnectShape(objPointer, 0.2);
+                myscene.AddObject(objPointer);
             }
-            
-//            myscene.AddObject( planePointer );
+
         }
     
         if(HasPlane)
@@ -120,9 +101,9 @@ inline void generateSurface()
 //            (int)(distortionParameter * 10),
 //            Rot_X
 //            );
-    sprintf(filename, "c_%d_line.ply",
-            HEIGHT
-            );
+//    sprintf(filename, "c_%d_line.ply",
+//            HEIGHT
+//            );
     sprintf(filename, "c_%d_%d_%d_%d.ply",
             WIDTH,
             DENSITY,

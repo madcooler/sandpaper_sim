@@ -42,7 +42,8 @@ public:
         size_t * ver_num,
         size_t * face_num
         );
-
+        
+    void ConnectCircle();
 };
 
 

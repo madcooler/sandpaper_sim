@@ -131,11 +131,19 @@ public:
 class ShapeObject
 {
 public:
+    double length_a;
+    double length_b;
+    double length_c;
+    
     std::vector< Vertex > vertex_list;
     std::vector< Face   > face_list;
 
     ShapeObject()
     {
+        length_a = 1;
+        length_b = 1;
+        length_c = 1;
+
     };
     ~ShapeObject()
     {
@@ -217,7 +225,18 @@ public:
     
     void PrintAllFace();
     
-    virtual void ConnectShape(const ShapeObject * obj,double threshold);
+    virtual void ConnectShape(
+        const ShapeObject * obj,
+        double threshold);
+    
+    virtual void ConnectShape(
+        const ShapeObject *obj,
+        double minDis,
+        double maxDis);
+    
+    virtual void AddTails(
+        double minDis,
+        double maxDis);
 };
 
 class Cube : public ShapeObject
@@ -376,6 +395,57 @@ public:
     
 };
 
+
+class Circle : public ShapeObject
+{
+
+public:
+    Circle()
+    {
+    }
+    Circle( double R ): ShapeObject()
+    {
+        size_t circle_num = 10;
+    
+        for(double phi = 0; phi < 2 * 3.1415; phi += 2 *3.1415/circle_num)
+        {
+            Vertex v;
+            v.x = R*cos(phi);
+            v.y = R*sin(phi);
+            v.z = 0;
+            AddVertex(&v);
+        }
+    
+        
+        Vertex_Indices vert_ptrs[] = {
+            { 0, 1, 2 },
+            { 1, 2, 3 },
+            { 2, 3, 4 },
+            { 3, 4, 5 },
+            { 4, 5, 6 },
+            { 5, 6, 7 },
+            { 6, 7, 8 },
+            { 7, 8, 9 },
+            { 8, 9, 0 },
+        };
+//
+        AddFace('0', 3 , vert_ptrs[0]);
+        AddFace('0', 3 , vert_ptrs[1]);
+        AddFace('0', 3 , vert_ptrs[2]);
+        AddFace('0', 3 , vert_ptrs[3]);
+        AddFace('0', 3 , vert_ptrs[4]);
+        AddFace('0', 3 , vert_ptrs[5]);
+        AddFace('0', 3 , vert_ptrs[6]);
+        AddFace('0', 3 , vert_ptrs[7]);
+        AddFace('0', 3 , vert_ptrs[8]);
+
+        
+    }
+    
+    
+};
+
+
 class Plane : public ShapeObject
 {
     size_t plane_ver_num;
@@ -411,6 +481,9 @@ public:
         
         AddFace('0', 3 , vert_ptrs[0]);
         AddFace('0', 3 , vert_ptrs[1]);
+        
+        length_a = width;
+        length_b = height;
     }
     
     Plane(int res,double width, double height): ShapeObject()
@@ -453,6 +526,8 @@ public:
         plane_ver_num = res * res;
         plane_face_num = 2 * (res-1) * (res-1);
         
+        length_a = width;
+        length_b = height;
     }
     
     Plane(int res): ShapeObject()
@@ -496,7 +571,14 @@ public:
         plane_face_num = 2 * (res-1) * (res-1);
     }
     
-    void ConnectShape(const ShapeObject * obj,double threshold);
+    void ConnectShape(
+        const ShapeObject * obj,
+        double threshold);
+        
+//    void ConnectShape(
+//        const ShapeObject *obj,
+//        double minDis,
+//        double maxDis);
     
 };
 
