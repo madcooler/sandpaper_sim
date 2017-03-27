@@ -26,6 +26,7 @@ public:
     
     void writeSceneToPLYFiles();
     void writeScene(char * filename);
+    void DeleteInvalidFace();
 };
 
 

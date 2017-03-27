@@ -14,8 +14,31 @@ void Scene::writeSceneToPLYFiles()
 }
 
 
+void Scene::DeleteInvalidFace()
+{
+    for (size_t i = 0; i < scene.size() ; i++)
+    {
+        // loop over all faces
+        for(size_t j = 0; j < scene[i]->face_list.size(); j++)
+        {
+            Face *f = &scene[i]->face_list[j];
+            if( f->verts[0] == f->verts[1] || f->verts[2] == f->verts[1] || f->verts[0] == f->verts[2] )
+            {
+                scene[i]->deleteFace(j);
+            }
+        
+        }
+    
+    }
+}
+
+
 void Scene::writeScene(char * filename)
 {
+    
+//    DeleteInvalidFace();
+    
+    
     int nverts = 0;
     int nfaces = 0;
     

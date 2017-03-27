@@ -13,23 +13,26 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   80
+#define WIDTH   15
 #define HEIGHT  WIDTH
 
 //#define DebugMode   true
 #define DebugMode   false
 
 // denstity of particle per unit grid
-#define DENSITY 3
+#define DENSITY 4
 
 //#define HasPlane false
 #define HasPlane true
+
+#define HasTail  true
+//#define HasTail  false
 
 inline void generateSurface()
 {
     Scene myscene;
     
-    Plane p1(WIDTH * 2 + 1, WIDTH ,HEIGHT);
+    Plane p1(WIDTH * 4 + 1, WIDTH ,HEIGHT);
     
     // parameters used in siggraph mesh
 //    int     disNum                  =  1;
@@ -39,12 +42,12 @@ inline void generateSurface()
 //    int     Rot_X                   = 45;
     
 //    int     disNum                  =  3;
-    double  distortionParameter     = 0.05;
+    double  distortionParameter     = 0.075;
 //    double  divideParameter         = 0.2;
 //    double  cubeSize                = 0.5;
     int     Rot_X                   = 45;
     
-    double plane_distortion         = 0.03;
+    double plane_distortion         = 0.075;
     p1.Distortion(plane_distortion);
     
     
@@ -57,13 +60,18 @@ inline void generateSurface()
             for( int l = 0; l < DENSITY; l++ )
             {
                 
-                double a = getUniformRandomNumber(0.1,1.0);
-                double b = getUniformRandomNumber(0.1,1.0);
+                double a = getUniformRandomNumber(0.2,1.0);
+                double b = getUniformRandomNumber(0.2,1.0);
                 double c = getUniformRandomNumber(0.5,1.0);
                 
                 if (DebugMode)
                 {
                     objPointer  = new Fine_Cube(5,0.5,0.5,0.5);
+                    objPointer->MoveObject(
+                        ( i - WIDTH /2 + 0  ),
+                        ( j - HEIGHT/2 + 0 ),
+                                       + 0
+                        );
                 }
                 
 
@@ -71,6 +79,12 @@ inline void generateSurface()
                 
                 if(!DebugMode)
                 {
+                    if( l < 2 )
+                    {
+                        a *= 1.3;
+                        b *= 1.3;
+                        c /= 2;
+                    }
                     objPointer  = new Fine_Cube(5,a,b,c);
                     objPointer->Distortion( distortionParameter );
                     objPointer->RandomlyRotate( Rot_X, Rot_X, 180 );
@@ -78,7 +92,13 @@ inline void generateSurface()
                     // move obj to corresponding grid with a little random shift
                     a = getUniformRandomNumber( - 0.35, 0.35 );
                     b = getUniformRandomNumber( - 0.35, 0.35 );
-                    c = getUniformRandomNumber( - 0.2, 0.2 );
+                    
+                    
+                    
+                    if( l < 2 )
+                        c = getUniformRandomNumber( - 0.3, 0.0 );
+                    else
+                        c = getUniformRandomNumber( - 0.2, 0.2 );
                     
                     objPointer->MoveObject(
                         ( i - WIDTH /2 + a  ),
@@ -86,8 +106,8 @@ inline void generateSurface()
                                        + c
                         );
                 }
-                
-                objPointer->AddTails(0.1, 0.7);
+                if(HasTail)
+                    objPointer->AddTails(0.1, 0.7);
 //                p1.ConnectShape(objPointer, 0.1, 0.7);
 
                 myscene.AddObject(objPointer);
@@ -113,16 +133,27 @@ inline void generateSurface()
 //    sprintf(filename, "c_%d_line.ply",
 //            HEIGHT
 //            );
-    sprintf(filename, "c_%d_%d_%d_%d.ply",
+
+    if(HasTail)
+        sprintf(filename, "c_%d_%d_%d_%d_%d_tail.ply",
             WIDTH,
             DENSITY,
 //            disNum,
-//            (int)(divideParameter * 10),
-            (int)(distortionParameter * 100),
+            (int)(distortionParameter * 1000),
+            (int)(plane_distortion * 1000),
             Rot_X
             );
-
-    sprintf(filename, "test.ply");
+    else
+        sprintf(filename, "c_%d_%d_%d_%d_%d_no_tail.ply",
+            WIDTH,
+            DENSITY,
+//            disNum,
+            (int)(distortionParameter * 1000),
+            (int)(plane_distortion * 1000),
+            Rot_X
+            );
+    
+//    sprintf(filename, "test.ply");
     myscene.writeScene(filename);
 }
 
