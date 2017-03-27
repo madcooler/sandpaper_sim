@@ -18,15 +18,19 @@ void Scene::DeleteInvalidFace()
 {
     for (size_t i = 0; i < scene.size() ; i++)
     {
+        ShapeObject * obj = scene[i];
+        size_t ver_num  = obj->vertex_list.size();
         // loop over all faces
-        for(size_t j = 0; j < scene[i]->face_list.size(); j++)
+        for(size_t j = 0; j < obj->face_list.size(); )
         {
-            Face *f = &scene[i]->face_list[j];
-            if( f->verts[0] == f->verts[1] || f->verts[2] == f->verts[1] || f->verts[0] == f->verts[2] )
+            Face *f = &obj->face_list[j];
+            if( f->verts[0] == f->verts[1] || f->verts[2] == f->verts[1] || f->verts[0] == f->verts[2]
+                || ! (f->verts[0] < ver_num) || ! (f->verts[1] < ver_num) || ! (f->verts[2] < ver_num) )
             {
                 scene[i]->deleteFace(j);
             }
-        
+            else
+                j++;
         }
     
     }
@@ -36,7 +40,7 @@ void Scene::DeleteInvalidFace()
 void Scene::writeScene(char * filename)
 {
     
-//    DeleteInvalidFace();
+    DeleteInvalidFace();
     
     
     int nverts = 0;

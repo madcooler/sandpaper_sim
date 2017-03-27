@@ -13,17 +13,17 @@
 
 #include "Fine_Cube.hpp"
 
-#define WIDTH   15
+#define WIDTH   30
 #define HEIGHT  WIDTH
 
-//#define DebugMode   true
-#define DebugMode   false
+#define DebugMode   true
+//#define DebugMode   false
 
 // denstity of particle per unit grid
 #define DENSITY 4
 
-//#define HasPlane false
-#define HasPlane true
+#define HasPlane false
+//#define HasPlane true
 
 #define HasTail  true
 //#define HasTail  false
@@ -67,11 +67,11 @@ inline void generateSurface()
                 if (DebugMode)
                 {
                     objPointer  = new Fine_Cube(5,0.5,0.5,0.5);
-                    objPointer->MoveObject(
-                        ( i - WIDTH /2 + 0  ),
-                        ( j - HEIGHT/2 + 0 ),
-                                       + 0
-                        );
+//                    objPointer->MoveObject(
+//                        ( i - WIDTH /2 + 0  ),
+//                        ( j - HEIGHT/2 + 0 ),
+//                                       + 0
+//                        );
                 }
                 
 
@@ -153,7 +153,9 @@ inline void generateSurface()
             Rot_X
             );
     
-//    sprintf(filename, "test.ply");
+    if (DebugMode)
+        sprintf(filename, "test.ply");
+    
     myscene.writeScene(filename);
 }
 

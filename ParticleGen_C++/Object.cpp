@@ -317,30 +317,38 @@ void ShapeObject::ConnectShape(
         // go over new added face from obj
         for(size_t i = 0; i < origin_face_size;i++)
         {
-
-            if(face_list[i].verts[0] == replaced_ver[j]
-                && face_list[i].verts[1] != origin_ver[j]
-                && face_list[i].verts[2] != origin_ver[j])
+            for(size_t k = 0; k < face_list[i].verts.size(); k++)
+            {
+                if(face_list[i].verts[k] == replaced_ver[j])
                 {
-                    face_list[i].verts[0] = origin_ver[j];
+                    face_list[i].verts[k] = origin_ver[j];
                     continue;
                 }
-            if(face_list[i].verts[0] != origin_ver[j]
-                && face_list[i].verts[1] == replaced_ver[j]
-                && face_list[i].verts[2] != origin_ver[j])
-                {
-                    face_list[i].verts[1] = origin_ver[j];
-                    continue;
+            }
 
-                }
-            if(face_list[i].verts[0] != origin_ver[j]
-                && face_list[i].verts[1] != origin_ver[j]
-                && face_list[i].verts[2] == replaced_ver[j])
-                {
-                    face_list[i].verts[2] = origin_ver[j];
-                    continue;
-
-                }
+//            if(face_list[i].verts[0] == replaced_ver[j]
+//                && face_list[i].verts[1] != origin_ver[j]
+//                && face_list[i].verts[2] != origin_ver[j])
+//                {
+//                    face_list[i].verts[0] = origin_ver[j];
+//                    continue;
+//                }
+//            if(face_list[i].verts[0] != origin_ver[j]
+//                && face_list[i].verts[1] == replaced_ver[j]
+//                && face_list[i].verts[2] != origin_ver[j])
+//                {
+//                    face_list[i].verts[1] = origin_ver[j];
+//                    continue;
+//
+//                }
+//            if(face_list[i].verts[0] != origin_ver[j]
+//                && face_list[i].verts[1] != origin_ver[j]
+//                && face_list[i].verts[2] == replaced_ver[j])
+//                {
+//                    face_list[i].verts[2] = origin_ver[j];
+//                    continue;
+//
+//                }
 
         }
     }
