@@ -235,24 +235,8 @@ void ShapeObject::ConnectShape(
     size_t origin_ver_size  = vertex_list.size();
     size_t origin_face_size = face_list.size();
     
-    AddShape(obj);
+//    AddShape(obj);
     
-//    std::vector<size_t> origin_ver;
-//    std::vector<size_t> obj_ver;
-//    
-//    for(size_t i = 0; i < origin_ver_size;i++)
-//        for(size_t j = origin_ver_size; j < vertex_list.size(); j++)
-//        {
-//            double dis = vertex_list[i].distance(vertex_list[j]);
-//            if(  dis > minDis && dis<maxDis)
-//            {
-//                origin_ver.push_back(i);
-//                obj_ver.push_back(j);
-//
-//            }
-//        
-//        
-//        }
     double min = 0;
     int replacement_pos = -1;
     
@@ -268,9 +252,9 @@ void ShapeObject::ConnectShape(
         min = 9999999999;
         replacement_pos = -1;
         
-        for(size_t i = origin_ver_size; i < origin_ver_size + obj->vertex_list.size();i++)
+        for(size_t i = 0; i < obj->vertex_list.size();i++)
         {
-            double dis = vertex_list[i].distance(vertex_list[j]);
+            double dis = vertex_list[j].distance(obj->vertex_list[i]);
             if(  dis > minDis
                     && dis < maxDis
                     && vertex_list[j].z < (length_c/3)
@@ -285,47 +269,117 @@ void ShapeObject::ConnectShape(
         
         if(replacement_pos > 0)
         {
-            origin_ver.push_back(replacement_pos);
-            replaced_ver.push_back(j);
+//            origin_ver.push_back(replacement_pos);
+//            replaced_ver.push_back(j);
+            vertex_list[j] = obj->vertex_list[replacement_pos];
+            
         }
         
         
     }
     
+
+}
+
+//void ShapeObject::ConnectShape(
+//    const ShapeObject *obj,
+//    double minDis,
+//    double maxDis)
+//{
+//    size_t origin_ver_size  = vertex_list.size();
+//    size_t origin_face_size = face_list.size();
+//    
+//    AddShape(obj);
+//    
+////    std::vector<size_t> origin_ver;
+////    std::vector<size_t> obj_ver;
+////    
+////    for(size_t i = 0; i < origin_ver_size;i++)
+////        for(size_t j = origin_ver_size; j < vertex_list.size(); j++)
+////        {
+////            double dis = vertex_list[i].distance(vertex_list[j]);
+////            if(  dis > minDis && dis<maxDis)
+////            {
+////                origin_ver.push_back(i);
+////                obj_ver.push_back(j);
+////
+////            }
+////        
+////        
+////        }
+//    double min = 0;
+//    int replacement_pos = -1;
+//    
+//    // nearest vertices in circle
+//    std::vector<size_t> origin_ver;
+//    
+//    // vertices in current object needs to be replaced
+//    std::vector<size_t> replaced_ver;
+//    
+//    // find nearest vertices
+//    for(size_t j = 0; j < origin_ver_size; j++)
+//    {
+//        min = 9999999999;
+//        replacement_pos = -1;
+//        
+//        for(size_t i = origin_ver_size; i < origin_ver_size + obj->vertex_list.size();i++)
+//        {
+//            double dis = vertex_list[i].distance(vertex_list[j]);
+//            if(  dis > minDis
+//                    && dis < maxDis
+//                    && vertex_list[j].z < (length_c/3)
+//                    && dis < min)
+//            {
+//                min = dis;
+//                replacement_pos = i;
+//            }
+//        
+//        
+//        }
+//        
+//        if(replacement_pos > 0)
+//        {
+//            origin_ver.push_back(replacement_pos);
+//            replaced_ver.push_back(j);
+//        }
+//        
+//        
+//    }
+//    
+////    for(size_t j = 0; j < replaced_ver.size(); j++)
+////    {
+////        Face new_face;
+////        
+////        int x = replaced_ver[j];
+////        int y = origin_ver[j];
+////        
+////        int z = origin_ver[j] + 1;
+////        
+////        if(z==vertex_list.size())
+////            z = origin_ver_size;
+////        
+////        Vertex_Indices vert_ptrs = {
+////            x, y, z
+////        };
+////        
+////        AddFace('0', 3 , vert_ptrs);
+////    }
+////    PrintAllFace();
+//    
 //    for(size_t j = 0; j < replaced_ver.size(); j++)
 //    {
-//        Face new_face;
-//        
-//        int x = replaced_ver[j];
-//        int y = origin_ver[j];
-//        
-//        int z = origin_ver[j] + 1;
-//        
-//        if(z==vertex_list.size())
-//            z = origin_ver_size;
-//        
-//        Vertex_Indices vert_ptrs = {
-//            x, y, z
-//        };
-//        
-//        AddFace('0', 3 , vert_ptrs);
-//    }
-//    PrintAllFace();
-    
-    for(size_t j = 0; j < replaced_ver.size(); j++)
-    {
-        // go over new added face from obj
-        for(size_t i = 0; i < origin_face_size;i++)
-        {
-            for(size_t k = 0; k < face_list[i].verts.size(); k++)
-            {
-                if(face_list[i].verts[k] == replaced_ver[j])
-                {
-                    face_list[i].verts[k] = origin_ver[j];
-                    continue;
-                }
-            }
-
+//        // go over new added face from obj
+//        for(size_t i = 0; i < origin_face_size;i++)
+//        {
+////            for(size_t k = 0; k < face_list[i].verts.size(); k++)
+////            {
+////                if(face_list[i].verts[k] == replaced_ver[j])
+////                {
+////                    face_list[i].verts[k] = origin_ver[j];
+////                    continue;
+////                }
+////            }
+//
 //            if(face_list[i].verts[0] == replaced_ver[j]
 //                && face_list[i].verts[1] != origin_ver[j]
 //                && face_list[i].verts[2] != origin_ver[j])
@@ -349,36 +403,36 @@ void ShapeObject::ConnectShape(
 //                    continue;
 //
 //                }
-
-        }
-    }
-    
-//    PrintAllFace();
-//    for(size_t i = 0; i < origin_face_size;i++)
-//    {
-//        face_list[i].printFace();
-//    
-//    }
-
-    // replace index
-    // go over new added face
-//    for(size_t i = origin_face_size; i < face_list.size();i++)
-//    {
-//        // go over all vertices near to original obj
-//        for(size_t j = 0; j < obj_ver.size(); j++)
-//        {
-//            for(size_t k = 0; k < face_list[i].verts.size(); k++)
-//            {
-//                if(face_list[i].verts[k] == obj_ver[j])
-//                {
-//                    face_list[i].verts[k] = origin_ver[j];
-//                    continue;
-//                }
-//            }
+//
 //        }
 //    }
-    
-}
+//    
+////    PrintAllFace();
+////    for(size_t i = 0; i < origin_face_size;i++)
+////    {
+////        face_list[i].printFace();
+////    
+////    }
+//
+//    // replace index
+//    // go over new added face
+////    for(size_t i = origin_face_size; i < face_list.size();i++)
+////    {
+////        // go over all vertices near to original obj
+////        for(size_t j = 0; j < obj_ver.size(); j++)
+////        {
+////            for(size_t k = 0; k < face_list[i].verts.size(); k++)
+////            {
+////                if(face_list[i].verts[k] == obj_ver[j])
+////                {
+////                    face_list[i].verts[k] = origin_ver[j];
+////                    continue;
+////                }
+////            }
+////        }
+////    }
+//    
+//}
 
 
 
@@ -549,16 +603,57 @@ void ShapeObject::AddTails(double minDis, double maxDis)
     center_x /= vertex_list.size();
     center_y /= vertex_list.size();
     
+    Vertex center(center_x,center_y,0);
         
-    double R = sqrt(length_a*length_a+length_b*length_b)/2 + 0.05;
-    CirclePoint cir(R);
-    cir.MoveObject(center_x, center_y, 0);
-    
-    
-    ConnectShape(&cir, minDis, maxDis);
+    for(size_t j = 0; j < vertex_list.size(); j++)
+    {
+        if(vertex_list[j].z < (length_c/3))
+        {
+            double movement_x = vertex_list[j].x - center_x;
+            double movement_y = vertex_list[j].y - center_y;
+//            double movement_z = vertex_list[j].z;
+            
+            double dis = vertex_list[j].distance(center);
+            
+            if(  dis > minDis && dis < maxDis )
+            {
+                vertex_list[j].x += 0.5 * movement_x;
+                vertex_list[j].y += 0.5 * movement_y;
+            }
+        }
+    }
+
 
 
 }
+
+//void ShapeObject::AddTails(double minDis, double maxDis)
+//{
+////    size_t origin_ver_size  = vertex_list.size();
+////    size_t origin_face_size = face_list.size();
+//    
+//    double center_x = 0;
+//    double center_y = 0;
+//    
+//    for(size_t j = 0; j < vertex_list.size(); j++)
+//    {
+//        center_x += vertex_list[j].x;
+//        center_y += vertex_list[j].y;
+//    }
+//    
+//    center_x /= vertex_list.size();
+//    center_y /= vertex_list.size();
+//    
+//        
+//    double R = sqrt(length_a*length_a+length_b*length_b)/2 + 0.05;
+//    CirclePoint cir(R);
+//    cir.MoveObject(center_x, center_y, 0);
+//    
+//    
+//    ConnectShape(&cir, minDis, maxDis);
+//
+//
+//}
 
 
 //void Plane::ConnectShape(
